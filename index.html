@@ -238,9 +238,9 @@ function showResult(){
   const total=answers.reduce((s,a)=>s+a.scored,0);
   let level,emoji,lc,lbg,lbd,hdrBg;
 
-  if(total>=21){level="높음";emoji="🔥";lc="#dc2626";lbg="#fef2f2";lbd="#fecaca";hdrBg="linear-gradient(135deg,#ef4444,#dc2626)";charName="지친 다이어터";charFile="https://raw.githubusercontent.com/ironai63-lab/3-psych-test/refs/heads/main/KakaoTalk_20260408_152955197.png";charDesc="지쳐 쓰러진 곰돌이… 지금은 쉬어갈 때예요.";}
-  else if(total>=17){level="중간";emoji="⚠️";lc="#ca8a04";lbg="#fffbeb";lbd="#fde68a";hdrBg="linear-gradient(135deg,#f59e0b,#d97706)";charName="갈등 다이어터";charFile="https://raw.githubusercontent.com/ironai63-lab/3-psych-test/refs/heads/main/KakaoTalk_20260408_152955197_01.png";charDesc="천사와 악마 사이에서 고민하는 다람쥐!";}
-  else{level="낮음";emoji="✅";lc="#16a34a";lbg="#f0fdf4";lbd="#bbf7d0";hdrBg="linear-gradient(135deg,#22c55e,#16a34a)";charName="여유 다이어터";charFile="https://raw.githubusercontent.com/ironai63-lab/3-psych-test/refs/heads/main/KakaoTalk_20260408_152955197_02.png";charDesc="차 한 잔의 여유와 함께 건강하게 🍵";}
+  if(total>=21){level="높음";emoji="🔥";lc="#dc2626";lbg="#fef2f2";lbd="#fecaca";hdrBg="linear-gradient(135deg,#ef4444,#dc2626)";charName="지친 다이어터";charFile="./KakaoTalk_20260408_152955197.png";charDesc="지쳐 쓰러진 곰돌이… 지금은 쉬어갈 때예요.";}
+  else if(total>=17){level="중간";emoji="⚠️";lc="#ca8a04";lbg="#fffbeb";lbd="#fde68a";hdrBg="linear-gradient(135deg,#f59e0b,#d97706)";charName="갈등 다이어터";charFile="./KakaoTalk_20260408_152955197_01.png";charDesc="천사와 악마 사이에서 고민하는 다람쥐!";}
+  else{level="낮음";emoji="✅";lc="#16a34a";lbg="#f0fdf4";lbd="#bbf7d0";hdrBg="linear-gradient(135deg,#22c55e,#16a34a)";charName="여유 다이어터";charFile="./KakaoTalk_20260408_152955197_02.png";charDesc="차 한 잔의 여유와 함께 건강하게 🍵";}
 
   const pct=Math.round(total/30*100);
 
