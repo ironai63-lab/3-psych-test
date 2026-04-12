@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>다이어트 번아웃 검사</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',system-ui,sans-serif;background:#f5f3ff;min-height:100vh;display:flex;justify-content:center;align-items:center;}
+.app{width:100%;max-width:480px;min-height:100vh;background:#fff;position:relative;overflow:hidden;}
+
+.intro{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px 24px;text-align:center;background:linear-gradient(160deg,#4f46e5 0%,#7c3aed 40%,#a78bfa 100%);color:#fff;position:relative;overflow:hidden;}
+.intro::before{content:"";position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:rgba(255,255,255,.06);border-radius:50%;}
+.intro-emoji{font-size:64px;margin-bottom:16px;animation:bounce 2s infinite;}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.intro h1{font-size:28px;font-weight:800;margin-bottom:6px;text-shadow:0 2px 8px rgba(0,0,0,.15);}
+.intro .subtitle{font-size:14px;opacity:.85;line-height:1.6;margin-bottom:24px;}
+.intro-info{background:rgba(255,255,255,.13);border-radius:14px;padding:16px 18px;margin-bottom:28px;text-align:left;font-size:13px;line-height:1.8;backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.15);}
+.start-btn{background:#fff;color:#4f46e5;border:none;border-radius:16px;padding:16px 48px;font-size:18px;font-weight:700;cursor:pointer;box-shadow:0 4px 24px rgba(0,0,0,.18);transition:all .2s;position:relative;z-index:1;}
+.start-btn:hover{transform:scale(1.05);}
+
+.question-screen{display:none;flex-direction:column;min-height:100vh;padding:0;}
+.progress-area{padding:24px 24px 0;}
+.progress-track{height:28px;background:#e5e7eb;border-radius:99px;overflow:visible;position:relative;box-shadow:inset 0 2px 6px rgba(0,0,0,.08);}
+.progress-fill{height:100%;background:linear-gradient(90deg,#818cf8,#6366f1,#4f46e5);border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1);position:relative;min-width:28px;}
+.progress-trophy{position:absolute;right:-4px;top:50%;transform:translateY(-50%);font-size:22px;filter:grayscale(.8) opacity(.4);transition:all .5s;}
+.progress-runner-wrap{position:absolute;right:0;top:50%;transform:translate(50%,-50%);transition:all .5s;z-index:2;}
+.progress-runner{display:block;transition:font-size .4s;}
+.progress-text{text-align:center;font-size:12px;color:#888;margin-top:8px;font-weight:600;}
+.progress-cheers{text-align:center;font-size:12px;margin-top:2px;color:#7c3aed;min-height:18px;}
+
+.question-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 24px 32px;}
+.q-card{background:linear-gradient(135deg,#f8f7ff,#eef2ff);border:2px solid #e0e7ff;border-radius:20px;padding:28px 24px 24px;width:100%;max-width:380px;text-align:center;box-shadow:0 4px 20px rgba(79,70,229,.08);position:relative;}
+.q-card-accent{position:absolute;top:-1px;left:50%;transform:translateX(-50%);width:60px;height:4px;background:linear-gradient(90deg,#4f46e5,#7c3aed);border-radius:0 0 4px 4px;}
+.q-number{font-size:72px;font-weight:900;background:linear-gradient(135deg,#4f46e5,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin-bottom:4px;}
+.q-of{font-size:13px;color:#888;margin-bottom:10px;}
+.q-text{font-size:18px;font-weight:700;color:#1e1b4b;line-height:1.55;}
+
+.likert-area{width:100%;max-width:380px;margin-top:28px;}
+.likert{display:flex;gap:8px;width:100%;justify-content:center;}
+.likert-btn{flex:1;height:64px;border:2.5px solid #e0e7ff;border-radius:16px;background:#fff;font-size:22px;font-weight:800;color:#4f46e5;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;position:relative;overflow:hidden;}
+.likert-btn::after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,#4f46e5,#7c3aed);opacity:0;transition:opacity .15s;}
+.likert-btn:hover{border-color:#4f46e5;transform:translateY(-3px);box-shadow:0 4px 12px rgba(79,70,229,.2);}
+.likert-btn:hover::after{opacity:.08;}
+.likert-btn:active{transform:scale(.95);}
+.likert-btn .btn-sub{font-size:8px;color:#a5b4fc;font-weight:500;position:relative;z-index:1;}
+.likert-btn span{position:relative;z-index:1;}
+.likert-ends{display:flex;justify-content:space-between;width:100%;margin-top:8px;font-size:11px;color:#aaa;padding:0 4px;}
+
+.result-screen{display:none;flex-direction:column;min-height:100vh;padding:0;}
+.result-header{text-align:center;padding:32px 24px;color:#fff;}
+.result-emoji{font-size:56px;margin-bottom:8px;}
+.result-level{font-size:15px;font-weight:600;}
+.result-score{font-size:56px;font-weight:900;margin:4px 0;}
+.result-score-unit{font-size:18px;font-weight:400;}
+
+.result-body{padding:0 24px 32px;}
+.section-title{font-size:15px;font-weight:700;color:#1e1b4b;margin:20px 0 10px;}
+.result-character{text-align:center;margin:16px 0 8px;}
+.result-character img{max-width:180px;height:auto;border-radius:16px;}
+.result-char-label{font-size:16px;font-weight:800;margin-top:6px;}
+
+.gauge-wrap{margin:10px 0 20px;}
+.gauge-label{font-size:12px;font-weight:600;color:#555;margin-bottom:4px;}
+.gauge-bar{height:16px;background:#f1f0ff;border-radius:12px;overflow:hidden;margin-bottom:10px;position:relative;}
+.gauge-fill{height:100%;border-radius:12px;transition:width .8s;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;}
+.gauge-val{font-size:10px;font-weight:700;color:#fff;}
+
+.feedback-box{border-radius:14px;padding:20px;margin:10px 0 16px;line-height:1.85;font-size:13px;}
+.feedback-box .fb-title{font-size:14px;font-weight:700;margin:14px 0 4px;display:flex;align-items:center;gap:4px;}
+.feedback-box .fb-title:first-of-type{margin-top:8px;}
+.feedback-box p{margin:0 0 4px;}
+
+.detail-table{width:100%;border-collapse:collapse;margin:8px 0 16px;}
+.detail-table th{padding:6px;font-size:10px;border-bottom:2px solid #c7d2fe;background:#eef2ff;text-align:center;}
+.detail-table td{padding:6px 8px;border-bottom:1px solid #eee;font-size:12px;text-align:center;}
+.detail-table .td-l{text-align:left;font-size:11px;}
+
+.restart-btn{display:block;width:100%;padding:16px;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;transition:all .2s;color:#fff;}
+.restart-btn:hover{transform:scale(1.02);}
+
+.fade-in{animation:fadeIn .4s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.slide-up{animation:slideUp .5s cubic-bezier(.4,0,.2,1);}
+@keyframes slideUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+<div class="intro" id="intro-screen">
+  <div class="intro-emoji">🔥</div>
+  <h1>다이어트 번아웃 검사</h1>
+  <p class="subtitle">다이어트 과정에서 겪는 심리적 소진,<br>당신은 얼마나 지쳐 있나요?</p>
+  <div class="intro-info">
+    📋 총 <b>10문항</b> · 약 <b>2분</b> 소요<br>
+    📊 5점 척도 응답 (1=전혀 그렇지 않다 ~ 5=매우 그렇다)<br>
+    🎯 결과: 총점 수준 + 요인별 프로파일 + 맞춤 피드백
+  </div>
+  <button class="start-btn" onclick="startTest()">검사 시작하기 →</button>
+</div>
+
+<div class="question-screen" id="question-screen">
+  <div class="progress-area">
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill" style="width:10%">
+        <div class="progress-runner-wrap" id="runner-wrap">
+          <span class="progress-runner" id="progress-runner" style="font-size:22px;">🏃</span>
+        </div>
+      </div>
+      <div class="progress-trophy" id="trophy">🏆</div>
+    </div>
+    <div class="progress-text" id="progress-text">1 / 10</div>
+    <div class="progress-cheers" id="cheers"></div>
+  </div>
+  <div class="question-body" id="question-body">
+    <div class="q-card fade-in" id="q-card">
+      <div class="q-card-accent"></div>
+      <div class="q-number" id="q-number">1</div>
+      <div class="q-of" id="q-of">10문항 중 1번째</div>
+      <div class="q-text" id="q-text"></div>
+    </div>
+    <div class="likert-area">
+      <div class="likert" id="likert-buttons"></div>
+      <div class="likert-ends"><span>전혀 그렇지 않다</span><span>매우 그렇다</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="result-screen" id="result-screen"></div>
+</div>
+
+<script>
+const questions=[
+  {id:1,label:"Q2",text:"무의식적으로 음식을 먹는 경우가 있다.",reverse:false,factor:2},
+  {id:2,label:"Q3",text:"한번 먹기 시작하면 멈추기 어렵다.",reverse:false,factor:2},
+  {id:3,label:"Q5",text:"계획이 틀어져도 다시 조정하여 이어간다.",reverse:true,factor:1},
+  {id:4,label:"Q6",text:"다이어트를 하다가 쉽게 포기하는 편이다.",reverse:false,factor:1},
+  {id:5,label:"Q8",text:"다이어트 목표를 달성하기 위해 스스로를 잘 통제한다.",reverse:true,factor:1},
+  {id:6,label:"Q9",text:"스트레스를 받으면 식단 조절이 흐트러진다.",reverse:false,factor:2},
+  {id:7,label:"Q12",text:"피곤하거나 지칠 때 더 먹고 싶어진다.",reverse:false,factor:2},
+  {id:8,label:"Q13",text:"다른 사람이 음식을 권해도 먹는 것을 조절할 수 있다.",reverse:true,factor:1},
+  {id:9,label:"Q14",text:"컨디션이 좋지 않을 때도 식단을 유지할 수 있다.",reverse:true,factor:1},
+  {id:10,label:"Q15",text:"기분이 좋을 때 평소보다 더 먹는 경우가 있다.",reverse:false,factor:1},
+];
+const N=questions.length;
+const cheersMsg=["시작이 반!","좋아요!","잘하고 있어요 💪","순조로워요~","절반 왔어요! 🎉","후반전 돌입!","거의 다 됐어요!","조금만 더!","마지막이에요!","완료! 🏆"];
+const runners=["🏃","🏃","🏃‍♂️","🏃‍♂️","🏃‍♀️","🚶‍♂️","⚡","⚡","🔥","🔥"];
+let current=0,answers=[];
+
+function startTest(){
+  document.getElementById("intro-screen").style.display="none";
+  document.getElementById("question-screen").style.display="flex";
+  current=0;answers=[];showQuestion();
+}
+
+function showQuestion(){
+  const q=questions[current];
+  const pct=((current+1)/N)*100;
+  document.getElementById("progress-fill").style.width=pct+"%";
+  document.getElementById("progress-text").textContent=`${current+1} / ${N}`;
+  document.getElementById("cheers").textContent=cheersMsg[current]||"";
+
+  const runner=document.getElementById("progress-runner");
+  runner.style.fontSize=(22+current*2)+"px";
+  runner.textContent=runners[current];
+
+  const trophy=document.getElementById("trophy");
+  trophy.style.filter=`grayscale(${Math.max(0,.8-current*.08)}) opacity(${Math.min(1,.4+current*.06)})`;
+  trophy.style.fontSize=(22+current)+"px";
+
+  document.getElementById("q-number").textContent=current+1;
+  document.getElementById("q-of").textContent=`10문항 중 ${current+1}번째`;
+  document.getElementById("q-text").textContent=q.text;
+
+  const likert=document.getElementById("likert-buttons");
+  likert.innerHTML="";
+  const sub=["전혀","별로","보통","약간","매우"];
+  for(let i=1;i<=5;i++){
+    const btn=document.createElement("button");
+    btn.className="likert-btn";
+    btn.innerHTML=`<span>${i}</span><span class="btn-sub">${sub[i-1]}</span>`;
+    btn.onclick=()=>selectAnswer(i);
+    likert.appendChild(btn);
+  }
+  const card=document.getElementById("q-card");
+  card.classList.remove("fade-in");void card.offsetWidth;card.classList.add("fade-in");
+}
+
+function selectAnswer(val){
+  const q=questions[current];
+  answers.push({raw:val,scored:q.reverse?(6-val):val,reverse:q.reverse,factor:q.factor,label:q.label});
+  current++;
+  if(current<N){showQuestion();}
+  else{
+    document.getElementById("progress-fill").style.width="100%";
+    document.getElementById("progress-runner").textContent="🎉";
+    document.getElementById("progress-runner").style.fontSize="36px";
+    const t=document.getElementById("trophy");t.style.filter="grayscale(0) opacity(1)";t.style.fontSize="32px";
+    document.getElementById("cheers").textContent="완료! 결과 확인 중...";
+    setTimeout(showResult,600);
+  }
+}
+
+function showResult(){
+  document.getElementById("question-screen").style.display="none";
+  const rs=document.getElementById("result-screen");rs.style.display="flex";
+
+  const total=answers.reduce((s,a)=>s+a.scored,0);
+  const f1=answers.filter(a=>a.factor===1).reduce((s,a)=>s+a.scored,0);
+  const f2=answers.filter(a=>a.factor===2).reduce((s,a)=>s+a.scored,0);
+  const f1pct=Math.round(f1/30*100),f2pct=Math.round(f2/20*100);
+
+  // Total: 10~50, cutoffs based on M≈30, SD≈6 from data
+  let level,emoji,lc,lbg,lbd,hdrBg,charName,charFile,charDesc;
+  if(total>=35){level="높음";emoji="🔥";lc="#dc2626";lbg="#fef2f2";lbd="#fecaca";hdrBg="linear-gradient(135deg,#ef4444,#dc2626)";charName="지친 다이어터";charFile="char_high.png";charDesc="지금은 쉬어갈 때예요. 번아웃 회복이 먼저!";}
+  else if(total>=26){level="중간";emoji="⚠️";lc="#ca8a04";lbg="#fffbeb";lbd="#fde68a";hdrBg="linear-gradient(135deg,#f59e0b,#d97706)";charName="갈등 다이어터";charFile="char_mid.png";charDesc="천사와 악마 사이, 유연한 전략이 필요해요!";}
+  else{level="낮음";emoji="✅";lc="#16a34a";lbg="#f0fdf4";lbd="#bbf7d0";hdrBg="linear-gradient(135deg,#22c55e,#16a34a)";charName="여유 다이어터";charFile="char_low.png";charDesc="건강하게 잘 유지하고 있어요 🍵";}
+
+  // Factor levels
+  const f1lv=f1>=22?"높음":f1>=16?"중간":"낮음";
+  const f2lv=f2>=15?"높음":f2>=10?"중간":"낮음";
+  const fCol=lv=>lv==="높음"?"#dc2626":lv==="중간"?"#ca8a04":"#16a34a";
+
+  const feedbacks={
+"높음":`<div class="feedback-box" style="background:${lbg};border:1px solid ${lbd};color:#7f1d1d;">
+<p>다이어트 과정에서 <b>상당한 심리적 소진</b>을 경험하고 있습니다. 자기조절 에너지가 고갈되었고, 감정·환경 자극에 식행동이 크게 흔들리는 상태입니다.</p>
+<div class="fb-title">🛑 다이어트 일시 중단 & 유지기 전환</div>
+<p>현재 체중을 유지하는 칼로리(TDEE)로 2~4주간 전환하세요. 소진된 의지력과 호르몬 균형(렙틴, 코르티솔)을 회복하는 것이 우선입니다. "쉬는 것도 다이어트의 일부"입니다.</p>
+<div class="fb-title">🍽️ 식단 단순화</div>
+<p>복잡한 칼로리 계산 대신, 매끼 "단백질 1가지 + 채소 1가지 + 탄수화물 1가지"만 지키세요. 완벽한 식단보다 지속 가능한 식단이 중요합니다.</p>
+<div class="fb-title">🚶 가벼운 산책 중심 활동</div>
+<p>격렬한 운동은 번아웃을 악화시킵니다. 하루 20~30분 산책이나 스트레칭으로 전환하고, 움직임의 목적을 "기분 전환"으로 바꿔보세요.</p>
+<div class="fb-title">📝 감정-섭식 일기</div>
+<p>"오늘 무엇 때문에 먹고 싶었는지"를 하루 한 줄씩 기록하면, 감정적 섭식 패턴을 인식하고 대처할 수 있습니다.</p>
+<div class="fb-title">🎯 행동 목표로 전환</div>
+<p>"3kg 감량" 대신 "일주일 3번 직접 요리하기"처럼 통제 가능한 행동 목표로 바꾸면 성취감을 느끼기 쉽습니다.</p>
+</div>`,
+
+"중간":`<div class="feedback-box" style="background:${lbg};border:1px solid ${lbd};color:#78350f;">
+<p><b>보통 수준의 어려움</b>을 겪고 있습니다. 평소엔 조절 가능하지만, 스트레스·피로가 쌓이면 흔들릴 수 있습니다.</p>
+<div class="fb-title">⚖️ 80/20 식단 전략</div>
+<p>80%는 계획대로, 20%는 자유롭게. 주 21끼 중 4끼 정도는 먹고 싶은 걸 드세요. 완벽 압박을 줄이면 나머지 준수율이 오릅니다.</p>
+<div class="fb-title">🥗 밀프렙</div>
+<p>주말에 3~4일치를 미리 준비하면, 피곤할 때 즉흥적 과식을 예방합니다.</p>
+<div class="fb-title">🏊 즐기는 운동</div>
+<p>의무감 대신 좋아하는 활동(댄스, 수영, 요가 등)을 주 2~3회 30분씩. 즐거운 운동이 습관이 됩니다.</p>
+<div class="fb-title">🧘 스트레스 대안 행동</div>
+<p>음식 대신 할 활동(5분 호흡법, 산책, 좋아하는 음악)을 미리 정해두세요. 충동의 10분만 버티면 가라앉습니다.</p>
+<div class="fb-title">😴 수면 확보</div>
+<p>수면 부족은 식욕 호르몬(그렐린)을 증가시킵니다. 하루 7~8시간 수면이 어떤 식단보다 효과적입니다.</p>
+</div>`,
+
+"낮음":`<div class="feedback-box" style="background:${lbg};border:1px solid ${lbd};color:#14532d;">
+<p>번아웃 수준이 <b>낮습니다</b>. 식단 조절에 큰 어려움 없이 안정적으로 유지하고 있습니다.</p>
+<div class="fb-title">✨ 현재 루틴 유지</div>
+<p>지금 잘 되고 있는 루틴을 기록해두세요. 나중에 슬럼프 올 때 레퍼런스가 됩니다.</p>
+<div class="fb-title">💪 점진적 목표 상향</div>
+<p>주 2~3회 근력 운동을 추가하면 기초대사량이 올라갑니다.</p>
+<div class="fb-title">🥦 영양 균형 점검</div>
+<p>단백질(kg당 1.2~1.6g), 식이섬유(25g↑), 수분(1.5~2L) 충분한지 확인하세요.</p>
+<div class="fb-title">🍕 번아웃 예방</div>
+<p>6개월 이상 엄격한 식단은 번아웃을 유발합니다. 2~3주에 한 번 자유식 데이를 두세요. 이건 실패가 아니라 전략입니다.</p>
+</div>`
+  };
+
+  let rows=answers.map(a=>`<tr><td>${a.label}</td><td class="td-l">${questions[a.label?answers.indexOf(a):0].text.slice(0,18)}…</td><td>F${a.factor}</td><td>${a.raw}</td><td>${a.reverse?"R":""}</td><td style="font-weight:700;color:${lc}">${a.scored}</td></tr>`).join("");
+
+  rs.innerHTML=`
+  <div class="result-header" style="background:${hdrBg};">
+    <div class="result-emoji">${emoji}</div>
+    <div class="result-level">다이어트 번아웃 수준: <b>${level}</b></div>
+    <div class="result-score">${total}<span class="result-score-unit">점</span></div>
+    <div style="font-size:12px;opacity:.8;">10점(최저) ~ 50점(최고)</div>
+  </div>
+  <div class="result-body slide-up">
+    <div class="result-character">
+      <img src="${charFile}" alt="${charName}" onerror="this.style.display='none'">
+      <div class="result-char-label" style="color:${lc};">${charName}</div>
+      <div style="font-size:13px;color:#888;margin-top:2px;">${charDesc}</div>
+    </div>
+
+    <div class="section-title">📊 요인별 프로파일</div>
+    <div class="gauge-wrap">
+      <div class="gauge-label">요인1: 자기조절 지속성 — <b style="color:${fCol(f1lv)}">${f1}/30점 (${f1lv})</b></div>
+      <div class="gauge-bar"><div class="gauge-fill" style="width:${f1pct}%;background:${fCol(f1lv)};"><span class="gauge-val">${f1pct}%</span></div></div>
+      <div style="font-size:11px;color:#888;margin-bottom:12px;">다이어트를 유지하기 위한 인지적 통제와 계획 이행 능력</div>
+
+      <div class="gauge-label">요인2: 정서·환경 반응성 — <b style="color:${fCol(f2lv)}">${f2}/20점 (${f2lv})</b></div>
+      <div class="gauge-bar"><div class="gauge-fill" style="width:${f2pct}%;background:${fCol(f2lv)};"><span class="gauge-val">${f2pct}%</span></div></div>
+      <div style="font-size:11px;color:#888;">감정·환경·신체 상태에 의해 식행동이 흔들리는 정도</div>
+    </div>
+
+    <div class="section-title">💡 맞춤 피드백 & 개선 방법</div>
+    ${feedbacks[level]}
+
+    <div class="section-title">📋 응답 상세</div>
+    <table class="detail-table">
+      <tr><th>문항</th><th style="text-align:left">내용</th><th>요인</th><th>응답</th><th>역채점</th><th>점수</th></tr>
+      ${answers.map((a,i)=>{const q=questions[i];return`<tr><td>${q.label}</td><td class="td-l">${q.text.slice(0,16)}…</td><td>F${q.factor}</td><td>${a.raw}</td><td>${a.reverse?"R":""}</td><td style="font-weight:700;color:${lc}">${a.scored}</td></tr>`;}).join("")}
+      <tr style="background:#f8f7ff;font-weight:700;">
+        <td colspan="5" style="text-align:right;padding:8px;">총점</td>
+        <td style="color:${lc};font-size:14px;padding:8px;">${total}</td>
+      </tr>
+    </table>
+
+    <div style="background:#f8f7ff;border-radius:10px;padding:12px;margin-bottom:16px;font-size:11px;line-height:1.7;color:#555;">
+      <b>채점 기준</b><br>
+      총점: 높음(35~50) / 중간(26~34) / 낮음(10~25)<br>
+      요인1(6문항): 높음(22~30) / 중간(16~21) / 낮음(6~15)<br>
+      요인2(4문항): 높음(15~20) / 중간(10~14) / 낮음(4~9)<br>
+      역채점(Q5,Q8,Q13,Q14): 6 − 원점수
+    </div>
+
+    <button class="restart-btn" style="background:${lc};" onclick="restart()">🔄 처음으로 돌아가기</button>
+    <p style="text-align:center;margin-top:12px;font-size:11px;color:#aaa;">본 검사는 심리측정 수업 프로젝트로 제작되었습니다.</p>
+  </div>`;
+}
+
+function restart(){
+  document.getElementById("result-screen").style.display="none";
+  document.getElementById("result-screen").innerHTML="";
+  document.getElementById("intro-screen").style.display="flex";
+  current=0;answers=[];
+}
+</script>
+</body>
+</html>
